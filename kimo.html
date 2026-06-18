@@ -1,0 +1,213 @@
+    <!DOCTYPE html>
+    <html lang="fr" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kimou Travel | Agence de Voyage & Tourisme</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="kimo style.css">
+
+        <style>
+            .admin-offers-display-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+                width: 100%;
+                margin-top: 25px;
+                box-sizing: border-box;
+            }
+            
+            .dynamic-section-divider {
+                margin-top: 50px;
+                border-top: 1px solid #eef2ef;
+                padding-top: 40px;
+            }
+
+            .dynamic-grid-title {
+                font-family: 'Cairo', sans-serif;
+                color: #1b4332;
+                font-size: 1.6rem;
+                margin: 0 0 5px 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .dynamic-grid-title i {
+                color: #d6a373;
+            }
+
+            .dynamic-grid-subtitle {
+                color: #666;
+                font-size: 0.95rem;
+                margin: 0 0 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+
+        <header>
+            <div class="logo">
+                <span class="brand-k">Kimou</span><span class="brand-t">Travel</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Accueil</a></li>
+                    <li><a href="#services">Nos Services</a></li>
+                    <li><a href="./gallery.html">Destinations</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <a href="tel:0549055155" class="btn-phone">
+                <i class="fas fa-phone-alt"></i> 0549055155
+            </a>
+        </header>
+
+        <section id="home" class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1920') no-repeat center center/cover;">
+            <div class="hero-content">
+                <h1 class="arabic-title">محتوى سياحي و رحلات سياحية<br>داخل و خارج الوطن</h1>
+                <p class="hero-subtitle">Explorez le monde avec l'expertise de Kimou Travel. Voyages organisés, réservations d'hôtels et assistance complète pour vos visas.</p>
+                <div class="hero-buttons">
+                    <a href="./gallery.html" class="btn-primary-gold">Découvrir les Offres</a>
+                    <a href="https://www.instagram.com/kimou_travel?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="btn-secondary-outline">
+                        <i class="fab fa-instagram"></i> Suivez-nous
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services-section">
+            <div class="section-header-center">
+                <h2>Nos Prestations Disponibles</h2>
+                <p>Choisissez le service que vous souhaitez réserver dès aujourd'hui</p>
+            </div>
+
+            <div class="services-static-list">
+                <div class="service-row-item">
+                    <div class="service-icon-box">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="service-text-content">
+                        <h3>Voyages Organisés</h3>
+                        <p>Réservez vos places pour nos circuits de groupe nationaux et internationaux au meilleur prix du marché.</p>
+                        <a href="./booking.html" class="service-link-action">Réserver <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-row-item">
+                    <div class="service-icon-box">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div class="service-text-content">
+                        <h3>Hôtels & Billetterie</h3>
+                        <p>Passez une demande de réservation pour vos vols fermes et hébergements sur-mesure dans le monde entier.</p>
+                        <a href="./booking.html" class="service-link-action">Réserver <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="service-row-item">
+                    <div class="service-icon-box">
+                        <i class="fas fa-passport"></i>
+                    </div>
+                    <div class="service-text-content">
+                        <h3>excursion national</h3>
+                        <p>reserver vos places .</p>
+                        <a href="./booking.html" class="service-link-action">Réserver <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        
+        </section>
+
+        <section id="contact" class="contact-summary-strip">
+            <div class="contact-info-block">
+                <h3>Besoin d'un renseignement immédiat ?</h3>
+                <p>Notre équipe est disponible 6j/7 pour planifier vos vacances de rêve.</p>
+            </div>
+            <div class="contact-action-links">
+                <a href="tel:0549055155" class="contact-btn"><i class="fas fa-phone-alt"></i> Appeler</a>
+                <a href="./booking.html" class="contact-btn gold-btn"><i class="fas fa-calendar-check"></i> Formulaire</a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-container">
+                <p>&copy; 2026 Kimou Travel. Tous droits réservés.</p>
+                <p>Développé par <span class="dev-team">HxL Devs</span></p>
+            </div>
+        </footer>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const offersContainer = document.getElementById('homepageOffersGrid');
+                
+                // Safety Check: Break if target grid wrapper is missing
+                if (!offersContainer) return; 
+
+                // 1. Fetch live custom rows arrays from local system memory
+                const liveOffers = JSON.parse(localStorage.getItem('kimouOffers')) || [];
+
+                // 2. Clear out container placeholder states before layout generation
+                offersContainer.innerHTML = '';
+
+                // Fallback screen text state if admin haven't added anything yet
+                if (liveOffers.length === 0) {
+                    offersContainer.innerHTML = `
+                        <div class="empty-state-card" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #ffffff; border-radius: 8px; border: 1px dashed #cccccc; width: 100%; box-sizing: border-box;">
+                            <i class="fas fa-suitcases" style="font-size: 2.5rem; color: #ccc; margin-bottom: 10px; display: block;"></i>
+                            <p style="color: #777; font-style: italic; margin: 0; font-size: 0.95rem;">
+                                Auc circuit flash disponible pour le moment. Consultez nos prestations principales ou repassez plus tard !
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 3. Generate interactive structures dynamically loop by loop
+                liveOffers.forEach(function(offer) {
+                    const cardMarkup = `
+                        <div class="dynamic-tour-card" style="background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid #eef2ef; display: flex; flex-direction: column;">
+                            
+                            <div class="tour-card-banner"z style="background: linear-gradient(135deg, #1b4332, #2d6a4f); padding: 25px 20px; color: #ffffff; position: relative;">
+                                <span style="background: #d6a373; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 9px; border-radius: 4px; text-transform: uppercase; position: absolute; top: 15px; right: 15px; letter-spacing: 0.5px;">
+                                    En Vedette
+                                </span>
+                                <i class="fas fa-map-marked-alt" style="font-size: 1.8rem; color: rgba(255,255,255,0.25); margin-bottom: 8px; display: block;"></i>
+                                <h4 style="margin: 0; font-size: 1.35rem; font-family: 'Cairo', sans-serif; font-weight: 700; line-height: 1.3;">${offer.title}</h4>
+                            </div>
+                            
+                            <div class="tour-card-body" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; gap: 15px;">
+                                <div>
+                                    <div style="font-size: 0.88rem; color: #d6a373; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-calendar-day"></i> <span>Session: ${offer.dates}</span>
+                                    </div>
+                                    
+                                    <p style="color: #555; font-size: 0.92rem; line-height: 1.5; margin: 0; white-space: pre-line;">
+                                        ${offer.desc ? offer.desc : "Explorez cette destination exclusive programmée sur mesure par Kimou Travel. Contactez-nous pour les détails d'excursion."}
+                                    </p>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f4f1; padding-top: 15px; margin-top: 5px;">
+                                    <div>
+                                        <span style="font-size: 0.72rem; color: #888; display: block; text-transform: uppercase; font-weight: 600;">Tarif Place</span>
+                                        <strong style="color: #1b4332; font-size: 1.25rem; font-weight: 700; font-family: 'Poppins', sans-serif;">${offer.price}</strong>
+                                    </div>
+                                    <a href="./booking.html" style="background-color: #1b4332; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 6px; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s ease;">
+                                        Réserver <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Drop inside the parent grid layout element wrapper
+                    offersContainer.insertAdjacentHTML('beforeend', cardMarkup);
+                });
+            });
+        </script>
+    </body>
+    </html>

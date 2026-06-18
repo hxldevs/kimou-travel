@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimou Travel | Faire une Réservation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="kimo style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span class="brand-k">Kimou</span><span class="brand-t">Travel</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="./kimo.html">Accueil</a></li>
+                <li><a href="./kimo.html#services">Prestations</a></li>
+                <li><a href="./gallery.html">Destinations</a></li>
+                <li><a href="./kimo.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="tel:0549055155" class="btn-phone">
+            <i class="fas fa-phone-alt"></i> 0549055155
+        </a>
+    </header>
+
+    <section class="booking-section">
+        <div class="booking-wrapper">
+            
+            <div class="booking-steps-info">
+                <h2>Planifiez en toute sérénité</h2>
+                <p>Soumettez votre demande de réservation en moins de 2 minutes. Notre équipe vérifie les disponibilités et vous recontacte par téléphone sous 24 heures pour finaliser votre dossier.</p>
+                
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">
+                        <h4>Remplissez le formulaire</h4>
+                        <p>Indiquez vos coordonnées valides ainsi que vos dates de voyage.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">
+                        <h4>Traitement instantané</h4>
+                        <p>Votre demande est stockée en toute sécurité dans notre base.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">
+                        <h4>Confirmation par appel</h4>
+                        <p>Nous vous appelons pour valider le paiement et le départ.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="booking-card-form">
+                <h3>Formulaire de Réservation</h3>
+                <p class="form-subtitle">Veuillez remplir tous les champs obligatoires (*)</p>
+                
+                <form id="bookingForm">
+                    <div class="input-box">
+                        <label for="fullname">Nom et prénom Complet *</label>
+                        <input type="text" id="fullname" placeholder="Ex: Abdelhak Mezroua" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="phone">Numéro de Téléphone *</label>
+                        <input type="tel" id="phone" placeholder="Ex: 0606060606" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="birthdate">Date de naissance *</label>
+                        <input type="date" id="birthdate" required>
+                    </div>
+                  
+                    <div class="input-box">
+                        <label for="excursion">Journée d'excursion *</label>
+                        <input type="text" id="excursion" placeholder="Ex: Sahara Tour, Djerba, etc." required> 
+                    </div>
+
+                    <div class="input-box">
+                        <label for="travel-date">Date de Départ Souhaitée *</label>
+                        <input type="date" id="travel-date" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="payment">Type de Paiement *</label>
+                        <select id="payment" required>
+                            <option value="" disabled selected>Choisir une option...</option>
+                            <option value="sur Agence">Sur Agence</option>
+                           
+                            <option value="cache">Espèce (Cache)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="notes">Notes Spéciales ou Demandes (Optionnel)</label>
+                        <textarea id="notes" placeholder="Ex: Chambre single, présence d'enfants..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-send">
+                        Confirmer ma Demande de Réservation <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2026 Kimou Travel. Plateforme de Réservation Officielle.</p>
+            <p>Développé par <span class="dev-team">HxL Devs</span></p>
+        </div>
+    </footer>
+
+    <script>
+        // Get the selected offer from gallery page if coming from there
+        function getSelectedOfferFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const offer = urlParams.get('offer');
+            if (offer) {
+                document.getElementById('excursion').value = decodeURIComponent(offer);
+            }
+        }
+
+        // Save reservation to localStorage
+        function saveReservation(reservationData) {
+            let reservations = JSON.parse(localStorage.getItem('kimouReservations') || '[]');
+            
+            const newReservation = {
+                id: Date.now(),
+                nom: reservationData.nom,
+                prenom: reservationData.prenom,
+                dateNaissance: reservationData.dateNaissance,
+                telephone: reservationData.telephone,
+                prestation: reservationData.prestation,
+                dateDepart: reservationData.dateDepart,
+                paymentMethod: reservationData.paymentMethod,
+                notes: reservationData.notes || '',
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            reservations.push(newReservation);
+            localStorage.setItem('kimouReservations', JSON.stringify(reservations));
+            return newReservation;
+        }
+
+        // Handle form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const fullname = document.getElementById('fullname').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const birthdate = document.getElementById('birthdate').value;
+            const excursion = document.getElementById('excursion').value.trim();
+            const travelDate = document.getElementById('travel-date').value;
+            const payment = document.getElementById('payment').value;
+            const notes = document.getElementById('notes').value;
+            
+            // Validate required fields
+            if (!fullname || !phone || !birthdate || !excursion || !travelDate || !payment) {
+                alert("Veuillez remplir tous les champs obligatoires (*)");
+                return;
+            }
+            
+            // Validate phone number (basic validation)
+            if (!/^[0-9]{10,}$/.test(phone.replace(/\s/g, ''))) {
+                alert("Veuillez entrer un numéro de téléphone valide (10 chiffres minimum)");
+                return;
+            }
+            
+            // Split fullname into nom and prenom
+            const nameParts = fullname.split(' ');
+            const prenom = nameParts[0] || '';
+            const nom = nameParts.slice(1).join(' ') || '';
+            
+            // Create reservation object
+            const reservationData = {
+                nom: nom,
+                prenom: prenom,
+                dateNaissance: birthdate,
+                telephone: phone,
+                prestation: excursion,
+                dateDepart: travelDate,
+                paymentMethod: payment,
+                notes: notes
+            };
+            
+            // Save to localStorage
+            const savedReservation = saveReservation(reservationData);
+            
+            // Show success message
+            alert(`✅ Réservation envoyée avec succès !\n\nRéférence: ${savedReservation.id}\n\nNotre équipe vous contactera dans les 24 heures au ${phone} pour confirmer votre voyage à ${excursion}.`);
+            
+            // Reset form
+            this.reset();
+            
+            // Optional: Redirect to home page after 3 seconds
+            // setTimeout(() => {
+            //     window.location.href = 'index.html';
+            // }, 3000);
+        });
+        
+        // Auto-fill excursion if coming from gallery page
+        getSelectedOfferFromURL();
+        
+        // Log for debugging
+        console.log("📝 Page de réservation chargée");
+        console.log("Les réservations seront sauvegardées dans localStorage avec la clé: kimouReservations");
+    </script>
+</body>
+</html>
