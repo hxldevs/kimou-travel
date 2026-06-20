@@ -6,6 +6,10 @@
     <title>Kimou Travel | Destinations</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="kimo style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -16,9 +20,10 @@
         
         <nav>
             <ul>
-                <li><a href="./kimo.html">Accueil</a></li>
-                <li><a href="./kimo.html">Prestations</a></li>
+                <li><a href="./index.html">Accueil</a></li>
+                <li><a href="./index.html#services">Prestations</a></li>
                 <li><a href="./gallery.html" class="active-nav">Destinations</a></li>
+                <li><a href="./index.html#contact">Contact</a></li>
             </ul>
         </nav>
 
@@ -31,26 +36,21 @@
 
     <section class="gallery-hero-banner">
         <div class="gallery-hero-text">
-            <h2>Découvrez Nos Circuits Régionaux</h2>
+            <h2>Découvrez Nos Circuits</h2>
             <p>Explorez la richesse et la beauté des paysages algériens avec Kimou Travel.</p>
         </div>
     </section>
 
     <main class="gallery-section">
-        <div class="gallery-group">
-            <section class="home-offers-section" style="padding: 40px 20px;">
-                <div class="section-title">
-                    <h3><i class="fas fa-star"></i> Circuits Spéciaux Récents & Offres Flash</h3>
-                    <p>Dernières opportunités de voyage publiées en direct par notre agence :</p>
-                </div>
-
-                <!-- This is the bordered space where offers will appear -->
-                <div id="offersContainer">
-                    <div class="offers-placeholder-box" style="border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 10px; margin-top: 20px;">
-                        <p style="color: #666; font-style: italic;">Aucun circuit flash disponible pour le moment. Consultez nos prestations principales ou repassez plus tard !</p>
-                    </div>
-                </div>
-            </section>
+        <div class="group-title">
+            <i class="fas fa-star-of-life"></i> Circuits Spéciaux & Offres Flash
+        </div>
+        
+        <div id="offersContainer" class="offers-grid">
+            <div style="text-align:center; padding:40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #d4a373;"></i>
+                <p>Chargement des offres...</p>
+            </div>
         </div>
     </main>
 
@@ -62,90 +62,95 @@
     </footer>
 
     <script>
-        function displayOffers() {
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7cKcbM5qclTA7uzFJRQIMDngS-Afk_c0",
+            authDomain: "kimou-travel.firebaseapp.com",
+            projectId: "kimou-travel",
+            storageBucket: "kimou-travel.appspot.com",
+            messagingSenderId: "kimou-travel",
+            appId: "kimou-travel"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ===== DISPLAY OFFERS FROM FIREBASE =====
+        async function displayOffers() {
             const container = document.getElementById('offersContainer');
-            const offers = JSON.parse(localStorage.getItem('kimouOffers') || '[]');
+            container.innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #d4a373;"></i><p>Chargement...</p></div>';
+            
+            try {
+                const snapshot = await db.collection("offers")
+                    .orderBy("createdAt", "desc")
+                    .get();
 
-            console.log("Offres trouvées:", offers.length);
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="offers-placeholder-box" style="border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 10px;">
+                            <p style="color: #666; font-style: italic;">Aucun circuit flash disponible pour le moment.</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-            if (offers.length > 0) {
-                // Clear the container
                 container.innerHTML = '';
-                
-                // Create a grid to display offers (keeping your style)
                 const grid = document.createElement('div');
-                grid.style.display = 'grid';
-                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
-                grid.style.gap = '25px';
-                grid.style.marginTop = '20px';
-                
-                // Add each offer as a card
-                offers.forEach(offer => {
+                grid.className = 'image-grid';
+
+                snapshot.forEach(doc => {
+                    const offer = doc.data();
                     const card = document.createElement('div');
-                    card.style.background = 'white';
-                    card.style.borderRadius = '10px';
-                    card.style.overflow = 'hidden';
-                    card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-                    card.style.transition = 'transform 0.3s';
+                    card.className = 'featured-destination-card';
                     
-                    // Image part
                     let imageHtml = '';
                     if (offer.images && offer.images.length > 0) {
-                        imageHtml = `<img src="${offer.images[0]}" style="width: 100%; height: 200px; object-fit: cover;">`;
+                        imageHtml = `<div class="multi-photo-layout">
+                            <div class="main-photo-slot"><img src="${offer.images[0]}" alt="${offer.title}" loading="lazy"></div>
+                            <div class="thumbnail-photo-stack">
+                                ${offer.images[1] ? `<img src="${offer.images[1]}" alt="" loading="lazy">` : '<div></div>'}
+                                ${offer.images[2] ? `<img src="${offer.images[2]}" alt="" loading="lazy">` : '<div></div>'}
+                            </div>
+                        </div>`;
                     } else {
-                        imageHtml = `<div style="width: 100%; height: 200px; background: #1e3c72; display: flex; align-items: center; justify-content: center; color: white;">
-                                        <i class="fas fa-image" style="font-size: 40px;"></i>
-                                    </div>`;
+                        imageHtml = `<div style="height:250px; background:#1b4332; display:flex; align-items:center; justify-content:center; color:white;"><i class="fas fa-image fa-3x"></i></div>`;
                     }
                     
                     card.innerHTML = `
                         ${imageHtml}
-                        <div style="padding: 15px;">
-                            <h4 style="color: #1e3c72; margin-bottom: 10px; font-size: 18px;">${offer.title}</h4>
-                            <p style="color: #666; font-size: 13px; margin-bottom: 8px;">
-                                <i class="fas fa-calendar-alt"></i> Séjour: ${offer.stayDates || 'Non spécifié'}
-                            </p>
-                            <p style="color: #666; font-size: 13px; margin-bottom: 8px;">
-                                <i class="fas fa-plane-departure"></i> Départ: ${offer.departDate || 'Non spécifié'}
-                            </p>
-                            <p style="color: #666; font-size: 13px; margin-bottom: 8px;">
-                                <i class="fas fa-plane-arrival"></i> Retour: ${offer.returnDate || 'Non spécifié'}
-                            </p>
-                            <p style="color: #e67e22; font-size: 20px; font-weight: bold; margin: 10px 0;">
-                                ${offer.price || 'Prix sur demande'}
-                            </p>
-                            <p style="color: #555; font-size: 13px; line-height: 1.4;">${offer.desc || ''}</p>
-                            <button onclick="reserveOffer('${offer.title.replace(/'/g, "\\'")}')" 
-                                    style="margin-top: 12px; background: #e67e22; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; width: 100%;">
+                        <div class="image-content-box">
+                            <span class="live-badge">Nouveau</span>
+                            <h4>${escapeHtml(offer.title)}</h4>
+                            <p><i class="fas fa-calendar-alt"></i> Séjour: ${escapeHtml(offer.stayDates || '')}</p>
+                            <p><i class="fas fa-plane-departure"></i> Départ: ${escapeHtml(offer.departDate || '')}</p>
+                            <p><i class="fas fa-plane-arrival"></i> Retour: ${escapeHtml(offer.returnDate || '')}</p>
+                            <p><strong style="color:#d4a373;">Prix: ${escapeHtml(offer.price || '')}</strong></p>
+                            <p>${escapeHtml(offer.desc ? offer.desc.substring(0, 80) + '...' : '')}</p>
+                            <a href="booking.html?offer=${encodeURIComponent(offer.title)}" class="service-link-action" style="margin-top:10px; display:inline-block;">
                                 Réserver <i class="fas fa-arrow-right"></i>
-                            </button>
+                            </a>
                         </div>
                     `;
-                    
                     grid.appendChild(card);
                 });
-                
                 container.appendChild(grid);
-            } else {
-                // Keep the original placeholder style
-                container.innerHTML = `
-                    <div class="offers-placeholder-box" style="border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 10px; margin-top: 20px;">
-                        <p style="color: #666; font-style: italic;">Aucun circuit flash disponible pour le moment. Consultez nos prestations principales ou repassez plus tard !</p>
-                    </div>
-                `;
+            } catch (error) {
+                console.error("Error loading offers:", error);
+                container.innerHTML = '<p style="color: #e74c3c; text-align:center;">❌ Erreur de chargement</p>';
             }
         }
 
-        function reserveOffer(offerTitle) {
-            sessionStorage.setItem('selectedOffer', offerTitle);
-            window.location.href = 'booking.html?offer=' + encodeURIComponent(offerTitle);
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // Load offers when page loads
-        window.onload = displayOffers;
-        
-        // Refresh every 3 seconds to show new offers instantly
-        setInterval(displayOffers, 3000);
+        displayOffers();
+        // Refresh every 10 seconds
+        setInterval(displayOffers, 10000);
     </script>
 </body>
 </html>
