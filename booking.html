@@ -6,6 +6,10 @@
     <title>Kimou Travel | Faire une Réservation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="kimo style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -15,10 +19,10 @@
         </div>
         <nav>
             <ul>
-                <li><a href="./kimo.html">Accueil</a></li>
-                <li><a href="./kimo.html#services">Prestations</a></li>
+                <li><a href="./index.html">Accueil</a></li>
+                <li><a href="./index.html#services">Prestations</a></li>
                 <li><a href="./gallery.html">Destinations</a></li>
-                <li><a href="./kimo.html#contact">Contact</a></li>
+                <li><a href="./index.html#contact">Contact</a></li>
             </ul>
         </nav>
         <a href="tel:0549055155" class="btn-phone">
@@ -93,7 +97,8 @@
                         <select id="payment" required>
                             <option value="" disabled selected>Choisir une option...</option>
                             <option value="sur Agence">Sur Agence</option>
-                           
+                            <option value="carte bancaire">Carte Bancaire</option>
+                            <option value="virement">Virement Bancaire</option>
                             <option value="cache">Espèce (Cache)</option>
                         </select>
                     </div>
@@ -120,7 +125,20 @@
     </footer>
 
     <script>
-        // Get the selected offer from gallery page if coming from there
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7cKcbM5qclTA7uzFJRQIMDngS-Afk_c0",
+            authDomain: "kimou-travel.firebaseapp.com",
+            projectId: "kimou-travel",
+            storageBucket: "kimou-travel.appspot.com",
+            messagingSenderId: "kimou-travel",
+            appId: "kimou-travel"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ===== GET SELECTED OFFER FROM URL =====
         function getSelectedOfferFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const offer = urlParams.get('offer');
@@ -129,34 +147,10 @@
             }
         }
 
-        // Save reservation to localStorage
-        function saveReservation(reservationData) {
-            let reservations = JSON.parse(localStorage.getItem('kimouReservations') || '[]');
+        // ===== SAVE RESERVATION TO FIREBASE =====
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            const newReservation = {
-                id: Date.now(),
-                nom: reservationData.nom,
-                prenom: reservationData.prenom,
-                dateNaissance: reservationData.dateNaissance,
-                telephone: reservationData.telephone,
-                prestation: reservationData.prestation,
-                dateDepart: reservationData.dateDepart,
-                paymentMethod: reservationData.paymentMethod,
-                notes: reservationData.notes || '',
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-            
-            reservations.push(newReservation);
-            localStorage.setItem('kimouReservations', JSON.stringify(reservations));
-            return newReservation;
-        }
-
-        // Handle form submission
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            // Get form values
             const fullname = document.getElementById('fullname').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const birthdate = document.getElementById('birthdate').value;
@@ -165,56 +159,53 @@
             const payment = document.getElementById('payment').value;
             const notes = document.getElementById('notes').value;
             
-            // Validate required fields
             if (!fullname || !phone || !birthdate || !excursion || !travelDate || !payment) {
                 alert("Veuillez remplir tous les champs obligatoires (*)");
                 return;
             }
             
-            // Validate phone number (basic validation)
             if (!/^[0-9]{10,}$/.test(phone.replace(/\s/g, ''))) {
                 alert("Veuillez entrer un numéro de téléphone valide (10 chiffres minimum)");
                 return;
             }
             
-            // Split fullname into nom and prenom
             const nameParts = fullname.split(' ');
             const prenom = nameParts[0] || '';
             const nom = nameParts.slice(1).join(' ') || '';
+
+            const submitBtn = document.querySelector('.btn-send');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            submitBtn.disabled = true;
+
+            try {
+                await db.collection("reservations").add({
+                    nom: nom,
+                    prenom: prenom,
+                    dateNaissance: birthdate,
+                    telephone: phone,
+                    prestation: excursion,
+                    dateDepart: travelDate,
+                    paymentMethod: payment,
+                    notes: notes || '',
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                alert(`✅ Réservation envoyée avec succès !\n\nRéférence: ${Date.now()}\n\nNotre équipe vous contactera dans les 24 heures au ${phone} pour confirmer votre voyage à ${excursion}.`);
+                document.getElementById('bookingForm').reset();
+            } catch (error) {
+                alert("❌ Erreur: " + error.message);
+            }
             
-            // Create reservation object
-            const reservationData = {
-                nom: nom,
-                prenom: prenom,
-                dateNaissance: birthdate,
-                telephone: phone,
-                prestation: excursion,
-                dateDepart: travelDate,
-                paymentMethod: payment,
-                notes: notes
-            };
-            
-            // Save to localStorage
-            const savedReservation = saveReservation(reservationData);
-            
-            // Show success message
-            alert(`✅ Réservation envoyée avec succès !\n\nRéférence: ${savedReservation.id}\n\nNotre équipe vous contactera dans les 24 heures au ${phone} pour confirmer votre voyage à ${excursion}.`);
-            
-            // Reset form
-            this.reset();
-            
-            // Optional: Redirect to home page after 3 seconds
-            // setTimeout(() => {
-            //     window.location.href = 'index.html';
-            // }, 3000);
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
         
         // Auto-fill excursion if coming from gallery page
         getSelectedOfferFromURL();
         
-        // Log for debugging
-        console.log("📝 Page de réservation chargée");
-        console.log("Les réservations seront sauvegardées dans localStorage avec la clé: kimouReservations");
+        console.log("📝 Page de réservation avec Firebase chargée");
     </script>
 </body>
 </html>
