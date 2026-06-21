@@ -10,6 +10,73 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Image Gallery Carousel Styles */
+        .image-carousel {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background: #1b4332;
+        }
+        
+        .image-carousel .slides {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        
+        .image-carousel .slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        
+        .image-carousel .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 18px;
+            border-radius: 4px;
+        }
+        
+        .carousel-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+        
+        .image-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        .description-full {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
 
@@ -103,18 +170,29 @@
                     const card = document.createElement('div');
                     card.className = 'featured-destination-card';
                     
+                    // === IMAGE CAROUSEL (Unlimited Images) ===
                     let imageHtml = '';
                     if (offer.images && offer.images.length > 0) {
-                        imageHtml = `<div class="multi-photo-layout">
-                            <div class="main-photo-slot"><img src="${offer.images[0]}" alt="${offer.title}" loading="lazy"></div>
-                            <div class="thumbnail-photo-stack">
-                                ${offer.images[1] ? `<img src="${offer.images[1]}" alt="" loading="lazy">` : '<div></div>'}
-                                ${offer.images[2] ? `<img src="${offer.images[2]}" alt="" loading="lazy">` : '<div></div>'}
+                        imageHtml = `
+                            <div class="image-carousel" data-total="${offer.images.length}">
+                                <div class="slides">
+                                    ${offer.images.map(img => `
+                                        <div class="slide"><img src="${img}" alt="${offer.title}" loading="lazy"></div>
+                                    `).join('')}
+                                </div>
+                                ${offer.images.length > 1 ? `
+                                    <button class="carousel-btn prev" onclick="changeSlide(this, -1)">❮</button>
+                                    <button class="carousel-btn next" onclick="changeSlide(this, 1)">❯</button>
+                                    <div class="image-counter">1 / ${offer.images.length}</div>
+                                ` : ''}
                             </div>
-                        </div>`;
+                        `;
                     } else {
                         imageHtml = `<div style="height:250px; background:#1b4332; display:flex; align-items:center; justify-content:center; color:white;"><i class="fas fa-image fa-3x"></i></div>`;
                     }
+                    
+                    // === FULL DESCRIPTION (No Cutoff) ===
+                    const description = offer.desc ? escapeHtml(offer.desc) : '';
                     
                     card.innerHTML = `
                         ${imageHtml}
@@ -125,7 +203,7 @@
                             <p><i class="fas fa-plane-departure"></i> Départ: ${escapeHtml(offer.departDate || '')}</p>
                             <p><i class="fas fa-plane-arrival"></i> Retour: ${escapeHtml(offer.returnDate || '')}</p>
                             <p><strong style="color:#d4a373;">Prix: ${escapeHtml(offer.price || '')}</strong></p>
-                            <p>${escapeHtml(offer.desc ? offer.desc.substring(0, 80) + '...' : '')}</p>
+                            <p class="description-full">${description}</p>
                             <a href="booking.html?offer=${encodeURIComponent(offer.title)}" class="service-link-action" style="margin-top:10px; display:inline-block;">
                                 Réserver <i class="fas fa-arrow-right"></i>
                             </a>
@@ -139,6 +217,33 @@
                 container.innerHTML = '<p style="color: #e74c3c; text-align:center;">❌ Erreur de chargement</p>';
             }
         }
+
+        // === CAROUSEL NAVIGATION ===
+        window.changeSlide = function(btn, direction) {
+            const carousel = btn.closest('.image-carousel');
+            const slides = carousel.querySelector('.slides');
+            const total = parseInt(carousel.dataset.total);
+            let current = parseInt(carousel.dataset.current) || 0;
+            
+            current += direction;
+            if (current < 0) current = total - 1;
+            if (current >= total) current = 0;
+            
+            carousel.dataset.current = current;
+            slides.style.transform = `translateX(-${current * 100}%)`;
+            
+            const counter = carousel.querySelector('.image-counter');
+            if (counter) {
+                counter.textContent = `${current + 1} / ${total}`;
+            }
+        };
+
+        // Initialize carousels on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.image-carousel').forEach(carousel => {
+                carousel.dataset.current = 0;
+            });
+        });
 
         function escapeHtml(text) {
             if (!text) return '';
